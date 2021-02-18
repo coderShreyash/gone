@@ -1,0 +1,117 @@
+<html><head>
+    <title>p5.js Simple Joystick</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <script src="p5.js"></script>
+    <script src="p5.dom.min.js"></script>
+    <script src="p5.play.js"></script>
+    <script src="p5.sound.min.js"></script>
+
+    <style>
+      canvas {
+        position: absolute;
+      }
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body cz-shortcut-listen="true">
+    <script>
+        function preload(){
+            z_l=loadImage("https://image.shutterstock.com/image-vector/vector-illustration-cartoon-zombie-260nw-152581976.jpg");
+            man_i=loadImage("man.png")
+          }
+
+      let sprite_x;
+      let sprite_y;
+      const sprite_size = 50;
+      let jx;
+      let jy;
+      let jr;
+
+      const max_jump_height = 30;
+      let current_jump_height = 0;
+      let moving_vertically = false;
+      var width = document.body.clientWidth;
+      var height = document.body.clientHeight;
+      function setup() {
+        createCanvas(document.body.clientWidth, document.body.clientHeight);
+        sprite_x = 50;
+        sprite_y = 50;
+        jx = (width /3.5)*3;
+        jy = (height / 3.75) * 3;
+        jr = height / 7.5;
+        wall1=createSprite(10,height/2,20,height);
+        wall2=createSprite(width-10,height/2,20,height);
+        wall3=createSprite(width/2,height-10,width,20);
+        wall4=createSprite(width/2,10,width,20);
+        player = createSprite(width/2,height-50,0,0);
+        player.addImage(man_i)
+        player.scale=0.75;
+       
+
+        wall1.shapeColor="black"
+        wall2.shapeColor="black"
+        wall3.shapeColor="black"
+        wall4.shapeColor="black"
+        dist=0;
+frameRate(120);
+      }
+      function draw() {
+        moving_vertically = false;
+        dist=(jx+jr)-player.x;
+        background("white");
+        drawSprites();
+        // draw joy stick interface
+        push();
+        strokeWeight(3);
+        fill("white");
+        circle(jx, jy, jr * 2);
+        pop();
+        push();
+        strokeWeight(4);
+        fill("rgb(255,75,75)")
+        for(var i=0;i<touches.length;i++){
+            if(touches[i].x<(jx+jr+jr/2)&&touches[i].x>(jx-jr-jr/2)&&touches[i].y<(jy+jr)&&touches[i].y>(jy-jr)){
+            circle(touches[i].x,touches[i].y,height/8);
+            if(touches.length>0){
+            player.y=(touches[i].y);
+            player.x=(dist+touches[i].x*6);
+            }
+            else{
+            player.x=width/2;
+            player.y=height-50;
+            }
+            }            
+        }
+        if(touches.length===0){
+            circle(jx,jy,height/8);
+            player.x=width/2;
+            player.y=height-50;
+        }
+        if(!touches){
+        player.x=width/2;
+        player.y=height-50;
+        }
+        pop();
+      enemyattack();
+      }
+      function mousePressed() {
+  return false;
+}
+document.addEventListener("gesturestart", function(e) {
+        e.preventDefault();
+      });
+      function enemyattack(){
+        if(frameCount%100===0){
+          zombie = createSprite(random(width-(width/10),width-20),random(height/5,20),0,0)
+          zombie.addImage(z_l);
+          zombie.scale=0.25;
+        }
+      }
+    </script>
+  
+
+</body>
+</html>
